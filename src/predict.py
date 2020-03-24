@@ -1,5 +1,6 @@
 import os
 import torch
+import numpy as np
 
 import config
 import input_processing
@@ -8,25 +9,11 @@ import utils
 
 from transformers import BertTokenizer
 
-import sys
-import csv
-
-
-# from utils import *
-# from process import *
-
-from transformers import BertTokenizer, BertForTokenClassification
-from tqdm import tqdm, trange
-from shutil import copyfile
-
 home_dir = "./"
 data_dir = os.path.join(home_dir, "datasets")
 model_dir = os.path.join(home_dir, "model_dir")
 if not os.path.isdir(model_dir):
   os.mkdir(model_dir)
-
-print(config.BATCH_SIZE)
-print(config.TAGGING_SCHEME)
 
 tokenizer = config.tokenizer
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
