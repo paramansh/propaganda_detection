@@ -1,3 +1,7 @@
+import numpy as np
+import os
+import csv
+
 def read_articles(article_dir):
   articles = []
   train_dir = os.path.join(data_dir, article_dir)
@@ -28,6 +32,12 @@ def print_spans(article, span):
   for sp in span:
     print (article[sp[0]: sp[1]])
   print()
+
+def return_spans(article, span):
+  span_index_list = []
+  for sp in span:
+    span_index_list.append([sp[0], sp[1]])
+  return span_index_list
 
 def flat_accuracy(preds, labels):
   pred_flat = np.argmax(preds, axis=2).flatten()

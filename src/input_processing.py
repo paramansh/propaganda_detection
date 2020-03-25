@@ -1,6 +1,6 @@
 import torch
 
-import config
+import src.config as config
 
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 
