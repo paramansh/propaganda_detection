@@ -1,0 +1,8 @@
+Flask==1.1.1
+Flask-WTF==0.14.3
+Jinja2==2.11.1
+numpy==1.18.2
+pandas==1.0.3
+pathlib2==2.3.5
+torch==1.4.0
+transformers==2.6.0
