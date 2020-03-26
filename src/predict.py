@@ -2,6 +2,7 @@ import os
 import torch
 import numpy as np
 import argparse
+import wget
 
 import src.config
 import src.input_processing
@@ -23,7 +24,12 @@ if not os.path.isdir(model_dir):
 
 tokenizer = src.config.tokenizer
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = torch.load(os.path.join(model_dir, 'model_370_44_bioe.pt'), map_location={'cuda:0':'cpu'})
+model_path = os.path.join(model_dir, 'model_370_44_bioe.pt')
+if not os.path.exists(model_path):
+  url = 'https://media.githubusercontent.com/media/paramansh/pd_models/master/model_370_44_bioe.pt'
+  wget.download(url, model_path)
+
+model = torch.load(model_path, map_location={'cuda:0':'cpu'})
 
 
 def get_predictions(text):
