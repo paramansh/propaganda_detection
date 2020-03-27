@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import argparse
 import wget
+import gdown
 
 import src.config
 import src.input_processing
@@ -26,8 +27,9 @@ tokenizer = src.config.tokenizer
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model_path = os.path.join(model_dir, 'model_370_44_bioe.pt')
 if not os.path.exists(model_path):
-  url = 'https://media.githubusercontent.com/media/paramansh/pd_models/master/model_370_44_bioe.pt'
-  wget.download(url, model_path)
+ # url = 'https://media.githubusercontent.com/media/paramansh/pd_models/master/model_370_44_bioe.pt'
+  url = 'https://drive.google.com/uc?id=1-5oN2lS37IcXT1Lhd-H3TxlEdi4MzVPC'
+  gdown.download(url, model_path)
 
 model = torch.load(model_path, map_location={'cuda:0':'cpu'})
 
