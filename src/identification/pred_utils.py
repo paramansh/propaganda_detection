@@ -45,7 +45,7 @@ def get_model_predictions(model, dataloader):
   return predictions, true_labels, sentence_ids
 
 
-def get_score(model, dataloader, sentences, bert_examples, mode=None, article_ids=None):
+def get_score(model, dataloader, sentences, bert_examples, mode=None, article_ids=None, indices=None):
   predicted_spans = [[] for i in range(400)] # TODO 400 hardcoded
   
   def get_span_prediction(prediction_labels, sentence_index, sentences, bert_examples):

@@ -2,12 +2,10 @@ import time
 import datetime
 from tqdm import tqdm, trange
 
-# import os
 import torch
 import numpy as np
 
-# from transformers import BertTokenizer, BertForTokenClassification
-from transformers import AlbertForTokenClassification
+from transformers import BertTokenizer, BertForTokenClassification
 from transformers import get_linear_schedule_with_warmup, AdamW
 
 import identification
@@ -40,7 +38,8 @@ def train(model, train_dataloader, eval_dataloader, epochs=5, save_model=False):
         train_sentences,
         train_bert_examples,
         mode="train",
-        article_ids=article_ids)
+        article_ids=article_ids,
+        indices=train_indices)
 
     model.eval()
     eval_loss, eval_accuracy = 0, 0
@@ -65,7 +64,8 @@ def train(model, train_dataloader, eval_dataloader, epochs=5, save_model=False):
         eval_sentences,
         eval_bert_examples,
         mode="eval",
-        article_ids=article_ids)
+        article_ids=article_ids,
+        indices=eval_indices)
     if save_model:
       model_name = 'model_' + str(datetime.datetime.now()) + '.pt'
       torch.save(model, os.path.join(model_dir, model_name))
@@ -73,10 +73,6 @@ def train(model, train_dataloader, eval_dataloader, epochs=5, save_model=False):
     print()
     time.sleep(1)
 
-
-# model_dir = os.path.join(home_dir, "model_dir")
-# if not os.path.isdir(model_dir):
-  # os.mkdir(model_dir)
 
 articles, article_ids = identification.read_articles('train-articles')
 spans = identification.read_spans()
@@ -101,8 +97,12 @@ eval_dataloader, eval_sentences, eval_bert_examples = identification.get_data(ar
 
 
 num_labels = 2 + int(TAGGING_SCHEME =="BIO") + 2 * int(TAGGING_SCHEME == "BIOE")
-# model = BertForTokenClassification.from_pretrained('bert-base-uncased', num_labels=num_labels)
-model = AlbertForTokenClassification.from_pretrained('albert-base-v2', num_labels=num_labels)
+if identification.LANGUAGE_MODEL == "Albert":
+  from transformers import AlbertForTokenClassification
+  model = AlbertForTokenClassification.from_pretrained('albert-base-v2', num_labels=num_labels)
+else:
+  from transformers import BertForTokenClassification
+  model = BertForTokenClassification.from_pretrained('bert-base-uncased', num_labels=num_labels)
 
 if torch.cuda.is_available():
   print('Using cuda')
