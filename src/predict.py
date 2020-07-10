@@ -27,7 +27,6 @@ tokenizer = src.config.tokenizer
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model_path = os.path.join(model_dir, 'model_370_44_bioe.pt')
 if not os.path.exists(model_path):
- # url = 'https://media.githubusercontent.com/media/paramansh/pd_models/master/model_370_44_bioe.pt'
   url = 'https://drive.google.com/uc?id=1-5oN2lS37IcXT1Lhd-H3TxlEdi4MzVPC'
   gdown.download(url, model_path)
 
@@ -44,8 +43,21 @@ def get_predictions(text):
                             bert_examples=test_bert_examples,
                             mode="test")
 
-  span_index_list = src.utils.return_spans(test_articles[0], sps[0])
-  return span_index_list
+  spans = src.utils.return_spans(test_articles[0], sps[0])
+  return spans
+
+def get_predictions_indices(text):
+  test_articles = [text]
+  test_spans = [[]] * len(test_articles)
+  test_dataloader, test_sentences, test_bert_examples = src.input_processing.get_data(test_articles, test_spans, indices=np.arange(len(test_articles)))
+  sps = src.pred_utils.get_score(model, 
+                            dataloader=test_dataloader,
+                            sentences=test_sentences,
+                            bert_examples=test_bert_examples,
+                            mode="test")
+
+  return sps[0]
+
 
 
 if __name__ == "__main":
@@ -54,7 +66,7 @@ if __name__ == "__main":
   #   input_sentence = input()
   #   test_articles = [input_sentence]
   # else:
-  test_articles = ["Mini Mike, don’t lick your dirty fingers. Both unsanitary and dangerous to others and yourself!", "Just a random piece of text which should be a normal text"]
+  test_articles = ["A propaganda jihadi test to be done!", "Just a random piece of text which should be a normal text"]
   print("Starting prediction")
   model = torch.load(os.path.join(model_dir, 'model_370_44_bioe.pt'), map_location={'cuda:0':'cpu'})
   test_spans = [[]] * len(test_articles)

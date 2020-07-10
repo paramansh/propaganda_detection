@@ -34,10 +34,10 @@ def print_spans(article, span):
   print()
 
 def return_spans(article, span):
-  span_index_list = []
+  spans = []
   for sp in span:
-    span_index_list.append([sp[0], sp[1]])
-  return span_index_list
+    spans.append(article[sp[0] : sp[1]])
+  return spans
 
 def flat_accuracy(preds, labels):
   pred_flat = np.argmax(preds, axis=2).flatten()
