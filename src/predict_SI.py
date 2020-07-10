@@ -5,11 +5,6 @@ import argparse
 import wget
 import gdown
 
-# import src.config
-# import src.input_processing
-# import src.pred_utils
-# import src.utils
-
 from src import identification
 
 from transformers import BertTokenizer
@@ -34,6 +29,19 @@ if not os.path.exists(model_path):
 
 model = torch.load(model_path, map_location={'cuda:0':'cpu'})
 
+def get_dev_outputs(article_dir="dev-articles"):
+  test_articles, test_article_ids = identification.read_articles('dev-articles')
+  test_spans = [[]] * len(test_articles)
+  test_dataloader, test_sentences, test_bert_examples = identification.get_data(test_articles, test_spans, indices=np.arange(len(test_articles)))
+  sps = identification.get_score(model,
+      dataloader=test_dataloader,
+      sentences=test_sentences,
+      bert_examples=test_bert_examples,
+      mode="test")
+  with open('dev_predictions.txt', 'w') as fp:
+    for index in range(len(test_articles)):
+      for ii in sps[index]:
+        fp.write(test_article_ids[index] + "\t" + str(ii[0]) + "\t" + str(ii[1]) + "\n")
 
 def get_predictions(text):
   test_articles = [text]
