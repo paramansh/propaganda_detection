@@ -5,10 +5,12 @@ import argparse
 import wget
 import gdown
 
-import src.config
-import src.input_processing
-import src.pred_utils
-import src.utils
+# import src.config
+# import src.input_processing
+# import src.pred_utils
+# import src.utils
+
+from src import identification
 
 from transformers import BertTokenizer
 
@@ -23,7 +25,7 @@ model_dir = os.path.join(home_dir, "model_dir")
 if not os.path.isdir(model_dir):
   os.mkdir(model_dir)
 
-tokenizer = src.config.tokenizer
+tokenizer = identification.tokenizer
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model_path = os.path.join(model_dir, 'model_370_44_bioe.pt')
 if not os.path.exists(model_path):
@@ -36,21 +38,21 @@ model = torch.load(model_path, map_location={'cuda:0':'cpu'})
 def get_predictions(text):
   test_articles = [text]
   test_spans = [[]] * len(test_articles)
-  test_dataloader, test_sentences, test_bert_examples = src.input_processing.get_data(test_articles, test_spans, indices=np.arange(len(test_articles)))
-  sps = src.pred_utils.get_score(model, 
+  test_dataloader, test_sentences, test_bert_examples = identification.input_processing.get_data(test_articles, test_spans, indices=np.arange(len(test_articles)))
+  sps = identification.pred_utils.get_score(model, 
                             dataloader=test_dataloader,
                             sentences=test_sentences,
                             bert_examples=test_bert_examples,
                             mode="test")
 
-  spans = src.utils.return_spans(test_articles[0], sps[0])
+  spans = identification.utils.return_spans(test_articles[0], sps[0])
   return spans
 
 def get_predictions_indices(text):
   test_articles = [text]
   test_spans = [[]] * len(test_articles)
-  test_dataloader, test_sentences, test_bert_examples = src.input_processing.get_data(test_articles, test_spans, indices=np.arange(len(test_articles)))
-  sps = src.pred_utils.get_score(model, 
+  test_dataloader, test_sentences, test_bert_examples = identification.input_processing.get_data(test_articles, test_spans, indices=np.arange(len(test_articles)))
+  sps = identification.pred_utils.get_score(model, 
                             dataloader=test_dataloader,
                             sentences=test_sentences,
                             bert_examples=test_bert_examples,
@@ -71,9 +73,9 @@ if __name__ == "__main":
   model = torch.load(os.path.join(model_dir, 'model_370_44_bioe.pt'), map_location={'cuda:0':'cpu'})
   test_spans = [[]] * len(test_articles)
 
-  test_dataloader, test_sentences, test_bert_examples = src.input_processing.get_data(test_articles, test_spans, indices=np.arange(len(test_articles)))
+  test_dataloader, test_sentences, test_bert_examples = identification.input_processing.get_data(test_articles, test_spans, indices=np.arange(len(test_articles)))
 
-  sps = src.pred_utils.get_score(model, 
+  sps = identification.pred_utils.get_score(model, 
                             dataloader=test_dataloader,
                             sentences=test_sentences,
                             bert_examples=test_bert_examples,
@@ -82,5 +84,5 @@ if __name__ == "__main":
   for i in range(len(test_articles)):
     print(test_articles[i])
     print('Detected span: ')
-    src.utils.print_spans(test_articles[i], sps[i])
+    identification.utils.print_spans(test_articles[i], sps[i])
     print('--' * 50)
