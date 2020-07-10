@@ -217,6 +217,10 @@ def get_data(articles, spans, indices):
     span = spans[index]
     _, _, _, cur_sentences = get_sentence_tokens_labels(article, span, index)
     sentences += cur_sentences
+
+  print(len(sentences))
+  print(max([len(s.tokens) for s in sentences]))
+
   bert_examples = []
   for i, sentence in enumerate(sentences):
     input_feature = convert_sentence_to_input_feature(sentence, i, config.tokenizer)

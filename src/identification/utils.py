@@ -2,6 +2,9 @@ import numpy as np
 import os
 import csv
 
+from . import config
+data_dir = config.data_dir
+
 def read_articles(article_dir):
   articles = []
   train_dir = os.path.join(data_dir, article_dir)

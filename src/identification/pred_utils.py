@@ -1,6 +1,8 @@
 import os
 import torch
 import numpy as np
+from shutil import copyfile
+from . import config
 
 def merge_spans(current_spans):
   if not current_spans:
@@ -43,7 +45,7 @@ def get_model_predictions(model, dataloader):
   return predictions, true_labels, sentence_ids
 
 
-def get_score(model, dataloader, sentences, bert_examples, mode=None):
+def get_score(model, dataloader, sentences, bert_examples, mode=None, article_ids=None):
   predicted_spans = [[] for i in range(400)] # TODO 400 hardcoded
   
   def get_span_prediction(prediction_labels, sentence_index, sentences, bert_examples):
@@ -73,7 +75,6 @@ def get_score(model, dataloader, sentences, bert_examples, mode=None):
     article_index = sentence.article_index
     for i, label in enumerate(final_pred_labels):
       if label:
-        # print(word_start_index_map[i], word_end_index_map[i])
         predicted_spans[article_index].append((word_start_index_map[i], word_end_index_map[i]))
   
   predictions, _, sentence_ids = get_model_predictions(model, dataloader)
@@ -85,5 +86,22 @@ def get_score(model, dataloader, sentences, bert_examples, mode=None):
     get_span_prediction(predictions[ii], sentence_ids[ii], pred_sentences, pred_bert_examples)
   for span in predicted_spans:
     merged_predicted_spans.append(merge_spans(span))
+
   if mode == "test":
     return merged_predicted_spans 
+
+  if not os.path.isdir("predictions"):
+    os.mkdir("predictions")
+  copyfile(os.path.join(config.home_dir, "tools/task-SI_scorer.py"), "predictions/task-SI_scorer.py")
+  with open("predictions/predictions.tsv", 'w') as fp:
+    for index in indices:
+      filename = "article" + article_ids[index] + ".task1-SI.labels"
+      copyfile(os.path.join(config.data_dir, "train-labels-task1-span-identification/" + filename), "predictions/" + filename)
+      for ii in merged_predicted_spans[index]:
+        fp.write(article_ids[index] + "\t" + str(ii[0]) + "\t" + str(ii[1]) + "\n")
+
+  os.system("python3 predictions/task-SI_scorer.py -s predictions/predictions.tsv -r predictions/ -m")
+
+  for index in indices:
+    filename = "article" + article_ids[index] + ".task1-SI.labels"
+    os.remove("predictions/" + filename)
