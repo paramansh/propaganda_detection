@@ -34,4 +34,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 NUM_ARTICLES = 20
 LANGUAGE_MODEL = "Roberta"
 
+if LANGUAGE_MODEL == "Roberta":
+  from transformers import RobertaTokenizer
+  tokenizer = RobertaTokenizer.from_pretrained('roberta-base', lower_case=True)
+else:
+  from transformers import BertTokenizer
+  tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', lower_case=True)
 
