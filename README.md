@@ -19,7 +19,15 @@ If the model is not present in `model_dir`, it downloads our BERT_BIOE model ava
 To get outputs for dev-set (or any other folder)
 `$ python get_outputs.py --dev-output True`
 
-The instructions for running task TC code will be updated soon.
+## Task SI
+### Training 
+`$ python src/train_SI.py`
+
+The trained models will be stored in [model_dir](https://github.com/paramansh/propaganda_detection/tree/master/model_dir).
+### Prediction
+`$ python src/predict_TC.py`
+This outputs the techniques of given spans.
+
 
 ## Colab Notebooks
 Interactive iPython notebooks for both tasks and related experiments can be found
