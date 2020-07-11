@@ -1,6 +1,6 @@
 import os
 import csv
-import classification.config as config
+from . import config
 import datetime
 import numpy as np
 

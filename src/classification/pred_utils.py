@@ -1,9 +1,31 @@
 # from google.colab import files
 import csv
 import os
-from classification import config
+import torch
+import numpy as np
+
+from . import config
 import classification
+
+device = config.device
 data_dir = config.data_dir
+
+def get_model_predictions(model, dataloader):
+  model.eval()
+  predictions , true_labels = [], []
+  nb_eval_steps = 0
+  for batch in dataloader:
+    batch = tuple(t.to(device) for t in batch)
+    b_input_ids, b_labels, b_input_mask, b_lengths = batch
+    with torch.no_grad():
+      logits = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, lengths=b_lengths)
+    logits = logits[0]
+    logits = logits.detach().cpu().numpy()
+    label_ids = b_labels.to('cpu').numpy()
+    pred_label = np.argmax(logits, axis=1)
+    predictions.extend(pred_label)
+    true_labels.extend(label_ids)
+  return predictions, true_labels
 
 def get_dev_predictions(model):
   test_articles, _ = classification.read_articles("dev-articles")
@@ -42,27 +64,3 @@ def get_test_predictions(model):
     for i, row in enumerate(tsvreader):
       fp.write(row[0] + '\t' + config.distinct_techniques[pred[i]] + '\t' + row[2] + '\t' + row[3] + '\n')
   # files.download('predictions.txt')
-
-# Read training span labels 
-def read_spans(mode=None):
-  spans = []
-  techniques = []
-  if mode == "test":
-    label_dir = os.path.join(data_dir, "dev-task-TC-template.out")
-  else:
-    label_dir = os.path.join(data_dir, "train-labels-task2-technique-classification")
-  for filename in sorted(os.listdir(label_dir)):
-    myfile = open(os.path.join(label_dir, filename))
-    tsvreader = csv.reader(myfile, delimiter="\t")
-    span = []
-    technique = []
-    for row in tsvreader:
-      span.append((int(row[2]), int(row[3])))
-      if mode == "test":
-        technique.append("Slogans") # DUMMY
-      else:
-        technique.append(row[1])
-    myfile.close()
-    spans.append(span)
-    techniques.append(technique)
-  return spans, techniques

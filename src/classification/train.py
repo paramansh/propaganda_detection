@@ -1,6 +1,5 @@
 import time
-import classification.utils as utils
-import classification.config as config
+from . import config, utils
 import torch
 
 from transformers import AdamW

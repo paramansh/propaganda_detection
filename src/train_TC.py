@@ -44,7 +44,25 @@ train_articles, eval_articles, train_spans, eval_spans, train_techniques, eval_t
 train_dataloader = classification.get_data(train_articles, train_spans, train_techniques)
 eval_dataloader = classification.get_data(eval_articles, eval_spans, eval_techniques)
 
-model = classification.pretrained_model
+if classification.LANGUAGE_MODEL == "Roberta":
+  from transformers import RobertaTokenizer, RobertaForSequenceClassification
+  tokenizer = RobertaTokenizer.from_pretrained('roberta-base', lower_case=True)
+  model = RobertaForSequenceClassification.from_pretrained(
+      "roberta-base",
+      num_labels = len(distinct_techniques),
+      output_attentions = False, 
+      output_hidden_states = False,
+  )
+
+else:
+  from transformers import BertTokenizer, BertForSequenceClassification
+  tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', lower_case=True)
+  model = BertForSequenceClassification.from_pretrained(
+      "bert-base-uncased",
+      num_labels = len(distinct_techniques),
+      output_attentions = False, 
+      output_hidden_states = False,
+  )
 if torch.cuda.is_available():
   print('Using GPU')
   model.cuda()

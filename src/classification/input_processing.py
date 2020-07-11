@@ -2,7 +2,7 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler, Sequentia
 from sklearn import metrics
 from transformers import BertForTokenClassification
 from transformers import BertTokenizer
-from classification import config
+from . import config
 import torch
 
 def get_examples(articles, spans, techniques):
