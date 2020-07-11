@@ -3,7 +3,7 @@ import classification.utils as utils
 import classification.config as config
 import torch
 
-from transformers import BertForSequenceClassification, AdamW, BertConfig
+from transformers import AdamW
 from transformers import get_linear_schedule_with_warmup
 
 device = config.device
