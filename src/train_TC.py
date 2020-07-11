@@ -68,3 +68,5 @@ if torch.cuda.is_available():
   model.cuda()
 
 classification.train(model, train_dataloader, eval_dataloader, epochs=2)
+
+torch.save(model, os.path.join(classification.model_dir, 'classification_model_' + str(datetime.datetime.now()) + '.pt'))
