@@ -1,6 +1,6 @@
 # DETECTION OF PROPAGANDA TECHNIQUES IN NEWS ARTICLES
 This repository contains code for SEMEVAL 2020 TASK 11 "DETECTION OF PROPAGANDA TECHNIQUES IN NEWS ARTICLES." Our system was ranked 5th for the Technique Classification subtask. 
-The source code is available in the [src](https://github.com/paramansh/propaganda_detection/tree/master/src) directory. 
+The paper containing the system description can be found [here](https://arxiv.org/abs/2007.10827) and has been accepted for publication at SemEval2020. The source code is available in the [src](https://github.com/paramansh/propaganda_detection/tree/master/src) directory. 
 
 Note that this code uses version 2 of transformers library (2.8.0)
 
